@@ -1,225 +1,17 @@
+// src/main.ts
+import { detectAppleDevice } from 'detect-apple-device';
 import './style.css';
+
+// Types are included in the detect-apple-device package
+type DetectionOptions = Parameters<typeof detectAppleDevice>[0];
+type DetectionResult = ReturnType<typeof detectAppleDevice>;
+type MatchedDevice = DetectionResult['matches'][0];
 
 interface DeviceMetrics {
   logicalWidth: number;
   logicalHeight: number;
   scaleFactor: number;
 }
-
-interface DetectionOptions {
-  deviceTypes?: string[];
-  minReleaseDate?: string;
-  minConfidence?: number;
-  useWidth?: boolean;
-  useHeight?: boolean;
-  useScaleFactor?: boolean;
-  orientation?: 'auto' | 'portrait' | 'landscape';
-}
-
-interface MatchedDevice {
-  device: {
-    name: string;
-    type: string;
-    release_date: string;
-    screen: {
-      diagonal_inches: number;
-      ppi: number;
-      scale_factor: number;
-      aspect_ratio: string;
-      resolution: {
-        logical: { width: number; height: number };
-        physical: { width: number; height: number };
-      };
-    };
-  };
-  confidence: number;
-  matchDetails: {
-    widthMatch: boolean;
-    heightMatch: boolean;
-    scaleFactorMatch: boolean;
-  };
-}
-
-interface DetectionResult {
-  matches: MatchedDevice[];
-}
-
-// Mock implementation of detect-apple-device for demo purposes
-// In a real implementation, you would: npm install detect-apple-device
-class AppleDeviceDetector {
-  private devices = [
-    {
-      name: 'iPhone 15 Pro',
-      type: 'phone',
-      release_date: '2023-09-22',
-      screen: {
-        diagonal_inches: 6.1,
-        ppi: 460,
-        scale_factor: 3,
-        aspect_ratio: '19.5:9',
-        resolution: {
-          logical: { width: 393, height: 852 },
-          physical: { width: 1179, height: 2556 },
-        },
-      },
-    },
-    {
-      name: 'iPhone 15',
-      type: 'phone',
-      release_date: '2023-09-22',
-      screen: {
-        diagonal_inches: 6.1,
-        ppi: 460,
-        scale_factor: 3,
-        aspect_ratio: '19.5:9',
-        resolution: {
-          logical: { width: 393, height: 852 },
-          physical: { width: 1179, height: 2556 },
-        },
-      },
-    },
-    {
-      name: 'iPhone 14 Pro',
-      type: 'phone',
-      release_date: '2022-09-16',
-      screen: {
-        diagonal_inches: 6.1,
-        ppi: 460,
-        scale_factor: 3,
-        aspect_ratio: '19.5:9',
-        resolution: {
-          logical: { width: 393, height: 852 },
-          physical: { width: 1179, height: 2556 },
-        },
-      },
-    },
-    {
-      name: 'iPad Pro 12.9" (6th gen)',
-      type: 'tablet',
-      release_date: '2022-10-18',
-      screen: {
-        diagonal_inches: 12.9,
-        ppi: 264,
-        scale_factor: 2,
-        aspect_ratio: '4:3',
-        resolution: {
-          logical: { width: 1024, height: 1366 },
-          physical: { width: 2048, height: 2732 },
-        },
-      },
-    },
-    {
-      name: 'Apple Watch Series 9 (45mm)',
-      type: 'watch',
-      release_date: '2023-09-22',
-      screen: {
-        diagonal_inches: 1.9,
-        ppi: 396,
-        scale_factor: 2,
-        aspect_ratio: '1:1',
-        resolution: {
-          logical: { width: 484, height: 396 },
-          physical: { width: 484, height: 396 },
-        },
-      },
-    },
-  ];
-
-  detect(options: DetectionOptions = {}): DetectionResult {
-    const metrics = this.getCurrentMetrics();
-    return this.identify(metrics, options);
-  }
-
-  identify(
-    metrics: DeviceMetrics,
-    options: DetectionOptions = {}
-  ): DetectionResult {
-    const {
-      deviceTypes = [],
-      minReleaseDate = '',
-      minConfidence = 1,
-      useWidth = true,
-      useHeight = true,
-      useScaleFactor = true,
-    } = options;
-
-    const matches: MatchedDevice[] = [];
-
-    for (const device of this.devices) {
-      // Filter by device type
-      if (deviceTypes.length > 0 && !deviceTypes.includes(device.type)) {
-        continue;
-      }
-
-      // Filter by release date
-      if (minReleaseDate && device.release_date < minReleaseDate) {
-        continue;
-      }
-
-      // Calculate match confidence
-      let totalChecks = 0;
-      let matchingChecks = 0;
-      const matchDetails = {
-        widthMatch: false,
-        heightMatch: false,
-        scaleFactorMatch: false,
-      };
-
-      if (useWidth) {
-        totalChecks++;
-        const widthMatch =
-          device.screen.resolution.logical.width === metrics.logicalWidth ||
-          device.screen.resolution.logical.height === metrics.logicalWidth;
-        if (widthMatch) {
-          matchingChecks++;
-          matchDetails.widthMatch = true;
-        }
-      }
-
-      if (useHeight) {
-        totalChecks++;
-        const heightMatch =
-          device.screen.resolution.logical.height === metrics.logicalHeight ||
-          device.screen.resolution.logical.width === metrics.logicalHeight;
-        if (heightMatch) {
-          matchingChecks++;
-          matchDetails.heightMatch = true;
-        }
-      }
-
-      if (useScaleFactor) {
-        totalChecks++;
-        if (device.screen.scale_factor === metrics.scaleFactor) {
-          matchingChecks++;
-          matchDetails.scaleFactorMatch = true;
-        }
-      }
-
-      const confidence = totalChecks > 0 ? matchingChecks / totalChecks : 0;
-
-      if (confidence >= minConfidence) {
-        matches.push({
-          device,
-          confidence,
-          matchDetails,
-        });
-      }
-    }
-
-    return { matches: matches.sort((a, b) => b.confidence - a.confidence) };
-  }
-
-  private getCurrentMetrics(): DeviceMetrics {
-    return {
-      logicalWidth: window.screen.width,
-      logicalHeight: window.screen.height,
-      scaleFactor: window.devicePixelRatio || 1,
-    };
-  }
-}
-
-// Initialize the detector
-const detector = new AppleDeviceDetector();
 
 // DOM elements
 const screenDimensions = document.getElementById('screen-dimensions')!;
@@ -309,7 +101,7 @@ function getCurrentConfig(): DetectionOptions {
 // Perform automatic detection
 function performAutoDetection() {
   const config = getCurrentConfig();
-  const result = detector.detect(config);
+  const result = detectAppleDevice(config);
   renderResults(result, detectionResults);
 }
 
@@ -326,7 +118,7 @@ testManualBtn.addEventListener('click', () => {
   };
 
   const config = getCurrentConfig();
-  const result = detector.identify(metrics, config);
+  const result = detectAppleDevice.identify(metrics, config);
   renderResults(result, manualResults);
 });
 
