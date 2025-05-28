@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apple Device Detection Demo</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="header">
+        <h1>🍎 Apple Device Detection</h1>
+        <p>Test the detect-apple-device package in real-time</p>
+      </header>
+
+      <main class="container">
+        <section class="demo-card">
+          <h2 class="section-title">Current Device Detection</h2>
+
+          <div class="detection-info">
+            <div class="info-card">
+              <h3>Screen Dimensions</h3>
+              <p id="screen-dimensions">Loading...</p>
+            </div>
+            <div class="info-card">
+              <h3>Device Pixel Ratio</h3>
+              <p id="pixel-ratio">Loading...</p>
+            </div>
+            <div class="info-card">
+              <h3>Orientation</h3>
+              <p id="orientation">Loading...</p>
+            </div>
+          </div>
+
+          <div class="results-section">
+            <h3>Detection Results</h3>
+            <div id="detection-results">
+              <div class="loading">Analyzing device...</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="demo-card">
+          <h2 class="section-title">Manual Testing</h2>
+          <div class="manual-form">
+            <div class="form-group">
+              <label for="width">Width (logical pixels):</label>
+              <input type="number" id="width" value="393" />
+            </div>
+            <div class="form-group">
+              <label for="height">Height (logical pixels):</label>
+              <input type="number" id="height" value="852" />
+            </div>
+            <div class="form-group">
+              <label for="scale">Scale Factor:</label>
+              <select id="scale">
+                <option value="1">1x</option>
+                <option value="2">2x</option>
+                <option value="3" selected>3x</option>
+              </select>
+            </div>
+            <button id="test-manual" class="btn-primary">
+              Test These Dimensions
+            </button>
+          </div>
+          <div id="manual-results"></div>
+        </section>
+
+        <section class="demo-card">
+          <h2 class="section-title">Configuration Options</h2>
+          <div class="config-form">
+            <div class="form-group">
+              <label for="confidence">Minimum Confidence:</label>
+              <input
+                type="range"
+                id="confidence"
+                min="0"
+                max="1"
+                step="0.1"
+                value="1"
+              />
+              <span id="confidence-value">1.0</span>
+            </div>
+            <div class="form-group">
+              <label>Device Types:</label>
+              <div class="checkbox-group">
+                <label
+                  ><input type="checkbox" id="phone" checked /> Phone</label
+                >
+                <label
+                  ><input type="checkbox" id="tablet" checked /> Tablet</label
+                >
+                <label
+                  ><input type="checkbox" id="watch" checked /> Watch</label
+                >
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="min-date">Minimum Release Date:</label>
+              <input type="date" id="min-date" value="" />
+            </div>
+            <button id="apply-config" class="btn-secondary">
+              Apply Configuration
+            </button>
+          </div>
+        </section>
+
+        <section class="demo-card">
+          <h2 class="section-title">About This Demo</h2>
+          <p>
+            This demo showcases the <code>detect-apple-device</code> package,
+            which approximates Apple device identification based on screen
+            metrics. The library uses:
+          </p>
+          <ul>
+            <li>
+              <strong>Screen Width & Height:</strong> Logical pixel dimensions
+            </li>
+            <li>
+              <strong>Device Pixel Ratio:</strong> Scale factor (1x, 2x, 3x)
+            </li>
+            <li>
+              <strong>Privacy-First:</strong> No fingerprinting or tracking
+            </li>
+          </ul>
+          <p class="disclaimer">
+            ⚠️ Results are approximations only. Many Apple devices share
+            identical screen specifications.
+          </p>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
